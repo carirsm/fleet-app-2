@@ -9,3 +9,6 @@ class Truck(Base):
     truck_no = Column(Integer, nullable=False)
     model = Column(String, nullable=False)
     available = Column(Boolean, nullable=False)
+
+    class Config():
+        from_attributes = True
