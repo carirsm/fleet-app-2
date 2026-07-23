@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.truck import Truck
@@ -17,3 +17,10 @@ def create_truck(truck_data: TruckCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_truck)
     return new_truck
+
+@router.get('/trucks/{truck_id}', response_model=TruckResponse)
+def get_truck(truck_id: int, db: Session = Depends(get_db)):
+    truck = db.query(Truck).filter(Truck.id == truck_id).first()
+    if not truck:
+        raise HTTPException(status_code=404, detail="Truck not found")
+    return truck
