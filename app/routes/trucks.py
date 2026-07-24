@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.truck import Truck
-from app.schemas.truck import TruckCreate, TruckResponse, TruckUpdate
+from app.schemas.truck import TruckCreate, TruckResponse, TruckUpdate, TruckStatus
 
 router = APIRouter()
 
@@ -32,6 +32,16 @@ def update_truck(truck_id: int, truck_data: TruckUpdate, db: Session = Depends(g
         raise HTTPException(status_code=404, detail="Truck not found")
     setattr(truck, "truck_no", truck_data.truck_no)
     setattr(truck, "model", truck_data.model)
+    setattr(truck, "available", truck_data.available)
+    db.commit()
+    db.refresh(truck)
+    return truck
+
+@router.patch('/trucks/{truck_id}', response_model=TruckResponse)
+def update_truck_status(truck_id: int, truck_data: TruckStatus, db: Session = Depends(get_db)):
+    truck = db.query(Truck).filter(Truck.id == truck_id).first()
+    if not truck:
+        raise HTTPException(status_code=404, detail="Truck not found")
     setattr(truck, "available", truck_data.available)
     db.commit()
     db.refresh(truck)
