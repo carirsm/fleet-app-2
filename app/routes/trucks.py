@@ -46,3 +46,12 @@ def update_truck_status(truck_id: int, truck_data: TruckStatus, db: Session = De
     db.commit()
     db.refresh(truck)
     return truck
+
+@router.delete('/trucks/{truck_id}')
+def delete_truck(truck_id: int, db: Session = Depends(get_db)):
+    truck = db.query(Truck).filter(Truck.id == truck_id).first()
+    if not truck:
+        raise HTTPException(status_code=404, detail="Truck not found")
+    db.delete(truck)
+    db.commit()
+    return {"message": "Truck deleted"}
