@@ -13,3 +13,11 @@ class TruckResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class TruckUpdate(BaseModel):
+    truck_no: int
+    model: str
+    available: bool
+
+class TruckStatus(BaseModel):
+    available: bool
