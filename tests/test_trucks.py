@@ -11,6 +11,8 @@ def test_get_trucks():
 def test_create_trucks():
     response = client.post('/trucks', json={
         "truck_no": 9999,
+        "plate": "ABC1234",
+        "vin": "1HGBH41JXMN109186",
         "model": "Test Truck",
         "available": True
     })
@@ -18,11 +20,16 @@ def test_create_trucks():
     data = response.json()
     assert data["id"] is not None
     assert data["truck_no"] == 9999
+    assert data["plate"] == "ABC1234"
+    assert data["vin"] == "1HGBH41JXMN109186"
     assert data["model"] == "Test Truck"
+    assert data["available"] == True
 
 def test_get_truck_by_id():
     create_response = client.post('/trucks', json={
         "truck_no": 9999,
+        "plate": "ABC1234",
+        "vin": "1HGBH41JXMN109186",
         "model": "Test Truck",
         "available": True
     })
@@ -38,6 +45,8 @@ def test_get_truck_not_found():
 def test_delete_truck():
     create_response = client.post('/trucks', json={
         "truck_no": 9999,
+        "plate": "ABC1234",
+        "vin": "1HGBH41JXMN109186",
         "model": "Test Truck",
         "available": True
     })

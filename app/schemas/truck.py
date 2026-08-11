@@ -2,12 +2,16 @@ from pydantic import BaseModel
 
 class TruckCreate(BaseModel):
     truck_no: int
+    plate: str
+    vin: str
     model: str
     available: bool
 
 class TruckResponse(BaseModel):
     id: int
     truck_no: int
+    plate: str
+    vin: str
     model: str
     available: bool
 
@@ -16,6 +20,8 @@ class TruckResponse(BaseModel):
 
 class TruckUpdate(BaseModel):
     truck_no: int
+    plate: str
+    vin: str
     model: str
     available: bool
 
