@@ -12,7 +12,10 @@ def get_trucks(db: Session = Depends(get_db)):
 
 @router.post('/trucks', status_code=201, response_model=TruckResponse)
 def create_truck(truck_data: TruckCreate, db: Session = Depends(get_db)):
-    new_truck = Truck(truck_no=truck_data.truck_no, plate=truck_data.plate, vin=truck_data.vin, model=truck_data.model, available=truck_data.available)
+    plate = truck_data.plate.strip().upper()
+    if len(plate)!= 7:
+        raise HTTPException(status_code=422,detail="Plate must be exactly 7 characters")
+    new_truck = Truck(truck_no=truck_data.truck_no, plate=plate, vin=truck_data.vin, model=truck_data.model, available=truck_data.available)
     db.add(new_truck)
     db.commit()
     db.refresh(new_truck)
@@ -27,11 +30,14 @@ def get_truck(truck_id: int, db: Session = Depends(get_db)):
 
 @router.put('/trucks/{truck_id}', response_model=TruckResponse)
 def update_truck(truck_id: int, truck_data: TruckUpdate, db: Session = Depends(get_db)):
+    plate = truck_data.plate.strip().upper()
+    if len(plate) != 7:
+        raise HTTPException(status_code=422, detail="Plate must be exactly 7 characters")
     truck = db.query(Truck).filter(Truck.id == truck_id).first()
     if not truck:
         raise HTTPException(status_code=404, detail="Truck not found")
     setattr(truck, "truck_no", truck_data.truck_no)
-    setattr(truck, "plate", truck_data.plate)
+    setattr(truck, "plate", plate)
     setattr(truck,"vin", truck_data.vin)
     setattr(truck, "model", truck_data.model)
     setattr(truck, "available", truck_data.available)
