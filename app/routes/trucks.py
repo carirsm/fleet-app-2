@@ -15,6 +15,9 @@ def create_truck(truck_data: TruckCreate, db: Session = Depends(get_db)):
     plate = truck_data.plate.strip().upper()
     if len(plate)!= 7:
         raise HTTPException(status_code=422,detail="Plate must be exactly 7 characters")
+    existing_truck = db.query(Truck).filter(Truck.plate == plate).first()
+    if existing_truck:
+        raise HTTPException(status_code=409, detail="Truck already exists")
     new_truck = Truck(truck_no=truck_data.truck_no, plate=plate, vin=truck_data.vin, model=truck_data.model, available=truck_data.available)
     db.add(new_truck)
     db.commit()

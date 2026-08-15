@@ -1,14 +1,9 @@
-from fastapi.testclient import TestClient
-from app.main import app
-
-client = TestClient(app)
-
-def test_get_drivers():
+def test_get_drivers(client):
     response = client.get('/drivers')
     assert response.status_code == 200
     assert isinstance(response.json(), list)
 
-def test_create_drivers():
+def test_create_drivers(client):
     response = client.post('/drivers', json={
         "driver_no": 9999,
         "first_name": "First",
@@ -33,7 +28,7 @@ def test_create_drivers():
     assert data["available"] == True
     assert data["shift"] == "day"
 
-def test_get_driver_by_id():
+def test_get_driver_by_id(client):
     create_response = client.post('/drivers', json={
         "driver_no": 9999,
         "first_name": "First",
@@ -50,11 +45,11 @@ def test_get_driver_by_id():
     assert response.status_code == 200
     assert isinstance(response.json(), dict)
 
-def test_get_driver_not_found():
+def test_get_driver_not_found(client):
     response = client.get('/drivers/99999')
     assert response.status_code == 404
 
-def test_delete_driver():
+def test_delete_driver(client):
     create_response = client.post('/drivers', json={
         "driver_no": 9999,
         "first_name": "First",
