@@ -12,10 +12,15 @@ def get_drivers(db: Session = Depends(get_db)):
 
 @router.post('/drivers', status_code=201, response_model=DriverResponse)
 def create_driver(driver_data: DriverCreate, db: Session = Depends(get_db)):
+    first_name = driver_data.first_name.strip().title()
+    last_name = driver_data.last_name.strip().title()
+    existing_driver = db.query(Driver).filter(Driver.driver_no == driver_data.driver_no).first()
+    if existing_driver:
+        raise HTTPException(status_code=409, detail="Driver already exists")
     new_driver = Driver(
         driver_no=driver_data.driver_no,
-        first_name=driver_data.first_name,
-        last_name=driver_data.last_name,
+        first_name=first_name,
+        last_name=last_name,
         is_hazmat=driver_data.is_hazmat,
         is_tanker=driver_data.is_tanker,
         is_doubles=driver_data.is_doubles,
@@ -37,12 +42,14 @@ def get_driver(driver_id: int, db: Session = Depends(get_db)):
 
 @router.put('/drivers/{driver_id}', response_model=DriverResponse)
 def update_driver(driver_id: int, driver_data: DriverUpdate, db: Session = Depends(get_db)):
+    first_name = driver_data.first_name.strip().title()
+    last_name = driver_data.last_name.strip().title()
     driver = db.query(Driver).filter(Driver.id == driver_id).first()
     if not driver:
         raise HTTPException(status_code=404, detail="Driver not found")
     setattr(driver, "driver_no", driver_data.driver_no)
-    setattr(driver, "first_name", driver_data.first_name)
-    setattr(driver, "last_name", driver_data.last_name)
+    setattr(driver, "first_name", first_name)
+    setattr(driver, "last_name", last_name)
     setattr(driver, "is_hazmat", driver_data.is_hazmat)
     setattr(driver, "is_tanker", driver_data.is_tanker)
     setattr(driver, "is_doubles", driver_data.is_doubles)

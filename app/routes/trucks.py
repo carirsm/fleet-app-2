@@ -18,6 +18,10 @@ def create_truck(truck_data: TruckCreate, db: Session = Depends(get_db)):
     existing_truck = db.query(Truck).filter(Truck.plate == plate).first()
     if existing_truck:
         raise HTTPException(status_code=409, detail="Truck already exists")
+    truck_no = truck_data.truck_no
+    existing_truck_no = db.query(Truck).filter(Truck.truck_no == truck_no).first()
+    if existing_truck_no:
+        raise HTTPException(status_code=409, detail="Truck number already exists")
     new_truck = Truck(truck_no=truck_data.truck_no, plate=plate, vin=truck_data.vin, model=truck_data.model, available=truck_data.available)
     db.add(new_truck)
     db.commit()
@@ -39,6 +43,13 @@ def update_truck(truck_id: int, truck_data: TruckUpdate, db: Session = Depends(g
     truck = db.query(Truck).filter(Truck.id == truck_id).first()
     if not truck:
         raise HTTPException(status_code=404, detail="Truck not found")
+    existing_truck = db.query(Truck).filter(Truck.plate == plate, Truck.id != truck_id).first()
+    if existing_truck:
+        raise HTTPException(status_code=409, detail="Truck already exists")
+    truck_no = truck_data.truck_no
+    existing_truck_no = db.query(Truck).filter(Truck.truck_no == truck_no, Truck.id != truck_id).first()
+    if existing_truck_no:
+        raise HTTPException(status_code=409, detail="Truck number already exists")
     setattr(truck, "truck_no", truck_data.truck_no)
     setattr(truck, "plate", plate)
     setattr(truck,"vin", truck_data.vin)
