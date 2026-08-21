@@ -13,7 +13,6 @@ class DriverCreate(BaseModel):
     shift: ShiftType
 
 class DriverUpdate(BaseModel):
-    driver_no: int
     first_name: str
     last_name: str
     is_hazmat: bool

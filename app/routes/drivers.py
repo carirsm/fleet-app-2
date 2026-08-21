@@ -47,7 +47,6 @@ def update_driver(driver_id: int, driver_data: DriverUpdate, db: Session = Depen
     driver = db.query(Driver).filter(Driver.id == driver_id).first()
     if not driver:
         raise HTTPException(status_code=404, detail="Driver not found")
-    setattr(driver, "driver_no", driver_data.driver_no)
     setattr(driver, "first_name", first_name)
     setattr(driver, "last_name", last_name)
     setattr(driver, "is_hazmat", driver_data.is_hazmat)
