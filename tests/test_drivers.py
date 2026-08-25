@@ -65,3 +65,46 @@ def test_delete_driver(client):
     response = client.delete(f'/drivers/{driver_id}')
     assert response.status_code == 200
     assert response.json()["message"] == "Driver deleted"
+
+def test_create_driver_duplicate_test(client):
+    response = client.post('/drivers', json={
+        "driver_no": 9999,
+        "first_name": "First",
+        "last_name": "Last",
+        "is_hazmat": True,
+        "is_tanker": True,
+        "is_doubles": True,
+        "is_triples": True,
+        "available": True,
+        "shift": "day"
+    })
+    assert response.status_code == 201
+    
+    duplicate_response = client.post('/drivers', json={
+    "driver_no": 9999,
+    "first_name": "John",
+    "last_name": "Smith",
+    "is_hazmat": False,
+    "is_tanker": False,
+    "is_doubles": False,
+    "is_triples": False,
+    "available": False,
+    "shift": "night"
+    })
+    assert duplicate_response.status_code == 409
+
+def test_create_driver_mixed_case_test(client):
+    response = client.post('/drivers', json={
+        "driver_no": 9999,
+        "first_name": " first",
+        "last_name": "last ",
+        "is_hazmat": True,
+        "is_tanker": True,
+        "is_doubles": True,
+        "is_triples": True,
+        "available": True,
+        "shift": "day"
+    })
+    assert response.status_code == 201
+    assert response.json()["first_name"] == "First"
+    assert response.json()["last_name"] == "Last"
