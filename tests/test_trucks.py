@@ -88,3 +88,65 @@ def test_create_truck_duplicate_plate(client):
         "available": True
     })
     assert duplicate_response.status_code == 409
+
+def test_put_6_char_plate_validation(client):
+    create_response = client.post('/trucks', json={
+        "truck_no": 9999,
+        "plate": "TST0006",
+        "vin": "1HGBH41JXMN109186",
+        "model": "Test Truck",
+        "available": True
+    })
+    assert create_response.status_code == 201
+
+    truck_id = create_response.json()["id"]
+    response = client.put(f'/trucks/{truck_id}', json={
+        "truck_no": 9999,
+        "plate": "TST007",
+        "vin": "1HGBH41JXMN109186",
+        "model": "Test Truck",
+        "available": True
+    })
+    assert response.status_code == 422
+
+def test_put_8_char_plate_validation(client):
+    create_response = client.post('/trucks', json={
+        "truck_no": 9999,
+        "plate": "TST0008",
+        "vin": "1HGBH41JXMN109186",
+        "model": "Test Truck",
+        "available": True
+    })
+    assert create_response.status_code == 201
+
+    truck_id = create_response.json()["id"]
+    response = client.put(f'/trucks/{truck_id}', json={
+        "truck_no": 9999,
+        "plate": "TST00091",
+        "vin": "1HGBH41JXMN109186",
+        "model": "Test Truck",
+        "available": True
+    })
+    assert response.status_code == 422
+
+def test_put_plate_formatting(client):
+    create_response = client.post('/trucks', json={
+        "truck_no": 9999,
+        "plate": "TST0010",
+        "vin": "1HGBH41JXMN109186",
+        "model": "Test Truck",
+        "available": True
+    })
+    assert create_response.status_code == 201
+
+    truck_id = create_response.json()["id"]
+    response = client.put(f'/trucks/{truck_id}', json={
+        "truck_no": 9999,
+        "plate": "tst0010 ",
+        "vin": "1HGBH41JXMN109186",
+        "model": "Test Truck",
+        "available": True
+    })
+    assert response.status_code == 200
+    data = response.json()
+    assert data["plate"] == "TST0010"
