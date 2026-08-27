@@ -80,12 +80,14 @@ def test_create_truck_duplicate_plate(client):
         "model": "Test Truck",
         "available": True
     })
+    assert response.status_code == 201
+
     duplicate_response = client.post('/trucks', json={
-        "truck_no": 9999,
+        "truck_no": 9001,
         "plate": "TST0005",
-        "vin": "1HGBH41JXMN109186",
-        "model": "Test Truck",
-        "available": True
+        "vin": "1HGBH41JXMN109187",
+        "model": "Duplicate Test Truck",
+        "available": False
     })
     assert duplicate_response.status_code == 409
 
