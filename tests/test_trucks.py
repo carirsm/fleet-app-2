@@ -152,3 +152,22 @@ def test_put_plate_formatting(client):
     assert response.status_code == 200
     data = response.json()
     assert data["plate"] == "TST0010"
+
+def test_create_truck_duplicate_truck_no(client):
+    response = client.post('/trucks/', json={
+        "truck_no": 9999,
+        "plate": "TST0011",
+        "vin": "1HGBH41JXMN109186",
+        "model": "Test Truck",
+        "available": True
+    })
+    assert response.status_code == 201
+
+    duplicate_response = client.post('/trucks/', json={
+        "truck_no": 9999,
+        "plate": "TST0012",
+        "vin": "1HGBH41JXMN109188",
+        "model": "Duplicate Test Truck",
+        "available": False
+    })
+    assert duplicate_response.status_code == 409
