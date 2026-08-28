@@ -171,3 +171,52 @@ def test_create_truck_duplicate_truck_no(client):
         "available": False
     })
     assert duplicate_response.status_code == 409
+
+def test_put_exclude_truck_no(client):
+    create_response = client.post('/trucks', json={
+        "truck_no": 9999,
+        "plate": "TST0013",
+        "vin": "1HGBH41JXMN109186",
+        "model": "Test Truck",
+        "available": True
+    })
+    assert create_response.status_code == 201
+
+    truck_id = create_response.json()["id"]
+    response = client.put(f'/trucks/{truck_id}', json={
+        "truck_no": 9999,
+        "plate": "TST0014",
+        "vin": "1HGBH41JXMN109187",
+        "model": "Update Test Truck",
+        "available": False
+    })
+    assert response.status_code == 200
+
+def test_put_duplicate_truck_no(client):
+    create_response = client.post('/trucks', json={
+        "truck_no": 9999,
+        "plate": "TST0015",
+        "vin": "1HGBH41JXMN109186",
+        "model": "Test Truck",
+        "available": True
+    })
+    assert create_response.status_code == 201
+
+    alt_create_response = client.post('/trucks', json={
+        "truck_no": 9001,
+        "plate": "TST0016",
+        "vin": "1HGBH41JXMN109187",
+        "model": "Alt Test Truck",
+        "available": True
+    })
+    assert alt_create_response.status_code == 201
+
+    truck_id = alt_create_response.json()["id"]
+    response = client.put(f'/trucks/{truck_id}', json={
+        "truck_no": 9999,
+        "plate": "TST0017",
+        "vin": "1HGBH41JXMN109188",
+        "model": "Duplicate Test Truck",
+        "available": False
+    })
+    assert response.status_code == 409
